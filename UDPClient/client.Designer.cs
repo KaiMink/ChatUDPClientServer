@@ -1,7 +1,7 @@
 ﻿
 namespace UDPClient
 {
-    partial class Form1
+    partial class client
     {
         /// <summary>
         /// Required designer variable.
@@ -40,6 +40,7 @@ namespace UDPClient
             this.Mess.Name = "Mess";
             this.Mess.Size = new System.Drawing.Size(776, 22);
             this.Mess.TabIndex = 2;
+            this.Mess.TextChanged += new System.EventHandler(this.Mess_TextChanged);
             // 
             // buttonSend
             // 
@@ -61,6 +62,7 @@ namespace UDPClient
             this.listMess.TabIndex = 4;
             this.listMess.UseCompatibleStateImageBehavior = false;
             this.listMess.View = System.Windows.Forms.View.List;
+            this.listMess.SelectedIndexChanged += new System.EventHandler(this.listMess_SelectedIndexChanged);
             // 
             // Form1
             // 
@@ -71,7 +73,7 @@ namespace UDPClient
             this.Controls.Add(this.buttonSend);
             this.Controls.Add(this.Mess);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Client";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();

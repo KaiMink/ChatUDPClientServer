@@ -15,42 +15,54 @@ using System.Threading;
 
 namespace UDPClient
 {
-    public partial class Form1 : Form
+    public partial class client : Form
     {
-        public Form1()
+        public client()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
+            Connect();
         }
         //nhấn nút gửi đi
         private void buttonSend_Click(object sender, EventArgs e)
         {
            Send();
+            AddMess(Mess.Text);
         }
 
         IPEndPoint IP; //địa chỉ cuối, 127.0.0.1 là con số mặc định, port thay dc
-        Socket client; 
+        Socket Client; 
         //kết nối
         void Connect()
         {
             //IP server 
-             IP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1600);
-            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-            //kết nối tới server
-            client.Connect(IP);
+             IP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 2003);
+            Client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            try
+            {
+                //kết nối tới server
+                Client.Connect(IP);
+            }
+            catch
+            {
+                MessageBox.Show("Không thể kết nối đến Server", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                return;
+            }
             Thread listen = new Thread(Receive);
             listen.IsBackground = true;
+            listen.Start();
         }
         //đóng tạm thời
         void Close()
         {
-            client.Close();
+            Client.Close();
         }
 
         //gửi
         void Send()
         {
-            if(Mess.Text!=String.Empty)
-                client.Send(Serialize(Mess.Text)); //phân mảnh thành byte rồi gửi đi
+            if(Mess.Text!=string.Empty)
+                Client.Send(Serialize(Mess.Text)); //phân mảnh thành byte rồi gửi đi
         }
 
         //nhận
@@ -62,7 +74,7 @@ namespace UDPClient
                 while (true)
                 {
                     byte[] data = new byte[1024 * 5000];
-                    client.Receive(data);
+                    Client.Receive(data);
 
                     string message = (string)Deserialize(data);
                     AddMess(message);
@@ -76,7 +88,8 @@ namespace UDPClient
         //add mess vào listview
         void AddMess(string s)
         {
-                listMess.Items.Add(new ListViewItem() { Text = s });
+            listMess.Items.Add(new ListViewItem() { Text = s });
+            Mess.Clear();
         }
 
         //chuyển mess thành dãy byte gửi đi và chuyển dãy byte thành mess khi nhận được
@@ -94,7 +107,6 @@ namespace UDPClient
         {
             MemoryStream stream = new MemoryStream(data);
             BinaryFormatter format = new BinaryFormatter();
-            format.Deserialize(stream);
             return format.Deserialize(stream);
         }
 
@@ -102,6 +114,16 @@ namespace UDPClient
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             Close();
+        }
+
+        private void listMess_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Mess_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
